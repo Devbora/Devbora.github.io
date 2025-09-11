@@ -1,26 +1,122 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <title>ChattyCat</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webpage Preserver</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            text-align: center;
-            background-color: #f0f0f0;
+            font-family: 'VT323', monospace;
+            background-color: #0d0d0d;
+            color: #00ff00;
         }
 
-        h1:nth-child(1) {
-            color: darkorange;
+        #typing-text::after {
+            content: '|';
+            display: inline-block;
+            animation: blink 1s step-start infinite;
         }
 
-        h1:nth-child(2) {
-            color: dodgerblue;
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        .fade-out {
+            animation: fadeOut 1s forwards;
+        }
+
+        #countdown {
+            display: none;
+            color: #FBBF24;
+            letter-spacing: 2px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
         }
     </style>
 </head>
 
-<body>
-    <h1>MAUTCATTO</h1>
-    <h1>BEV DORA</h1>
+<body class="flex items-center justify-center min-h-screen m-0 p-4">
+    <div class="text-center">
+        <h1 id="typing-text" class="text-2xl md:text-4xl lg:text-5xl"></h1>
+        <p id="countdown" class="mt-8 text-xl md:text-3xl"></p>
+    </div>
+
+    <script>
+        const textToType = "Internet, the way it was meant to be.";
+        const typingElement = document.getElementById('typing-text');
+        const countdownElement = document.getElementById('countdown');
+        let index = 0;
+        const typingSpeed = 100;
+
+        function startCountdown() {
+            const now = new Date();
+            const targetYear = now.getFullYear();
+            const countdownDate = new Date(`October 7, ${targetYear} 00:00:00`).getTime();
+
+            countdownElement.style.display = 'block';
+            setTimeout(() => {
+                countdownElement.style.opacity = '1';
+            }, 50);
+
+            const interval = setInterval(function () {
+                const currentTime = new Date().getTime();
+                const distance = countdownDate - currentTime;
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+                if (distance < 0) {
+                    clearInterval(interval);
+                    countdownElement.innerHTML = "The date has arrived!";
+                }
+            }, 1000);
+        }
+
+        function typeWriter() {
+            if (index < textToType.length) {
+                typingElement.textContent += textToType.charAt(index);
+                index++;
+                setTimeout(typeWriter, typingSpeed);
+            } else {
+                // stop blinking cursor
+                typingElement.style.setProperty("--cursor", "none");
+                typingElement.style.animation = "none";
+
+                // fade out text
+                typingElement.classList.add('fade-out');
+
+                setTimeout(() => {
+                    typingElement.style.display = 'none';
+                    startCountdown();
+                }, 1000);
+            }
+        }
+
+        window.onload = function () {
+            typeWriter();
+        };
+    </script>
 </body>
 
 </html>
